@@ -7,8 +7,11 @@ resource "helm_release" "metrics_server" {
   chart            = lookup(var.metrics_server_helm, "chart", "metrics-server")
   version          = lookup(var.metrics_server_helm, "version", "3.11.0")
   namespace        = lookup(var.metrics_server_helm, "namespace", "kube-system")
-  timeout          = lookup(var.metrics_server_helm, "timeout", 300)
+  timeout          = lookup(var.metrics_server_helm, "timeout", 600)  # Increased timeout
   cleanup_on_fail  = lookup(var.metrics_server_helm, "cleanup_on_fail", true)
+  wait             = true
+  wait_for_jobs    = true
+  atomic           = true
 
   values = [
     yamlencode({
@@ -23,7 +26,8 @@ resource "helm_release" "metrics_server" {
         "--secure-port=4443",
         "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname",
         "--kubelet-use-node-status-port",
-        "--metric-resolution=15s"
+        "--metric-resolution=15s",
+        "--kubelet-insecure-tls"  # Add this for EKS compatibility
       ]
       resources = {
         requests = {
@@ -45,6 +49,29 @@ resource "helm_release" "metrics_server" {
           effect   = "NoSchedule"
         }
       ]
+      # Add readiness and liveness probes
+      readinessProbe = {
+        httpGet = {
+          path = "/readyz"
+          port = 4443
+          scheme = "HTTPS"
+        }
+        initialDelaySeconds = 20
+        periodSeconds = 10
+        timeoutSeconds = 5
+        failureThreshold = 3
+      }
+      livenessProbe = {
+        httpGet = {
+          path = "/livez"
+          port = 4443
+          scheme = "HTTPS"
+        }
+        initialDelaySeconds = 30
+        periodSeconds = 10
+        timeoutSeconds = 5
+        failureThreshold = 3
+      }
     })
   ]
 
@@ -53,4 +80,9 @@ resource "helm_release" "metrics_server" {
     aws_eks_node_group.main,
     aws_eks_addon.addons,
   ]
+
+  # Add a time delay to ensure cluster is fully ready
+  provisioner "local-exec" {
+    command = "sleep 30"
+  }
 }

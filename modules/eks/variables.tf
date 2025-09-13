@@ -136,7 +136,7 @@ variable "addons" {
 variable "metrics_server" {
   description = "Enable/disable metrics-server helm release"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "metrics_server_helm" {
@@ -148,7 +148,7 @@ variable "metrics_server_helm" {
     chart           = "metrics-server"
     namespace       = "kube-system"
     version         = "3.11.0"
-    timeout         = 300
+    timeout         = 600  # Increased timeout to 10 minutes
     cleanup_on_fail = true
   }
 }
