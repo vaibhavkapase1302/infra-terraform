@@ -126,12 +126,12 @@ variable "enable_external_secrets_stores" {
   default     = false
 }
 
-# Common Tags
-variable "additional_tags" {
-  description = "Additional tags to apply to all resources"
-  type        = map(string)
-  default     = {}
-}
+# Common Tags - Simplified
+# variable "additional_tags" {
+#   description = "Additional tags to apply to all resources"
+#   type        = map(string)
+#   default     = {}
+# }
 
 # AWS Secrets Manager names to create (optional)
 variable "secret_names" {

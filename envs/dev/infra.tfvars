@@ -52,11 +52,8 @@ ecr_repositories = [
 # ]
 secret_names = []
 
-# Additional Tags
-additional_tags = {
-  purpose     = "AlgoTest-Test"
-  created-by  = "terraform"
-}
+# Additional Tags - Simplified
+# additional_tags = {}
 
 # Domain Configuration
 domain_name = "kubetux.com"

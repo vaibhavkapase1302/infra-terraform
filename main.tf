@@ -1,12 +1,10 @@
 # Local values for common configuration
 locals {
-  common_tags = merge(var.additional_tags, {
+  common_tags = {
     Environment = var.environment
     Project     = var.project_name
     Owner       = var.owner
-    ManagedBy   = "Terraform"
-    CreatedDate = formatdate("YYYY-MM-DD", timestamp())
-  })
+  }
 
   # Naming convention
   name_prefix = "${var.project_name}-${var.environment}"
