@@ -41,7 +41,7 @@ resource "aws_lb_target_group" "traefik" {
     interval            = 30
     matcher             = "200"
     path                = "/ping"
-    port                = "traffic-port"
+    port                = "9000"
     protocol            = "HTTP"
     timeout             = 5
     unhealthy_threshold = 2

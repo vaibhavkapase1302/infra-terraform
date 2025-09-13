@@ -34,8 +34,8 @@ resource "helm_release" "traefik" {
         "--api.insecure=false",
         "--providers.kubernetescrd",
         "--providers.kubernetesingress",
-        "--entrypoints.web.address=:80",
-        "--entrypoints.websecure.address=:443",
+        "--entrypoints.web.address=:8080",
+        "--entrypoints.websecure.address=:8443",
         "--certificatesresolvers.letsencrypt.acme.tlschallenge=true",
         "--certificatesresolvers.letsencrypt.acme.email=admin@${var.domain_name}",
         "--certificatesresolvers.letsencrypt.acme.storage=/data/acme.json",
@@ -55,6 +55,27 @@ resource "helm_release" "traefik" {
         }
         spec = {
           loadBalancerSourceRanges = ["0.0.0.0/0"]
+        }
+      }
+
+      # Ports configuration
+      ports = {
+        web = {
+          port = 8080
+          expose = true
+          exposedPort = 80
+          protocol = "TCP"
+        }
+        websecure = {
+          port = 8443
+          expose = true
+          exposedPort = 443
+          protocol = "TCP"
+        }
+        traefik = {
+          port = 9000
+          expose = true
+          protocol = "TCP"
         }
       }
 
@@ -167,13 +188,13 @@ resource "kubernetes_service" "traefik" {
     port {
       name        = "web"
       port        = 80
-      target_port = 80
+      target_port = 8080
       protocol    = "TCP"
     }
     port {
       name        = "websecure"
       port        = 443
-      target_port = 443
+      target_port = 8443
       protocol    = "TCP"
     }
   }
