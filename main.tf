@@ -124,7 +124,7 @@ module "load_balancer" {
   public_subnet_cidrs        = var.public_subnet_cidrs
   alb_security_group_id      = module.networking.alb_security_group_id
   nlb_targets_security_group_id = module.networking.nlb_targets_security_group_id
-  ssl_certificate_arn        = module.acm.certificate_arn
+  ssl_certificate_arn        = ""  # Will be set after certificate validation
   enable_deletion_protection = var.enable_deletion_protection
   common_tags                = local.common_tags
 

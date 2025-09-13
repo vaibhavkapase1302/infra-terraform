@@ -1,7 +1,7 @@
 # Environment Configuration
 environment  = "dev"
 project_name = "myapp"
-owner        = "Vaibhav Kapase"
+owner        = "vaibhav.kapase"
 aws_region   = "ap-south-1"
 
 # Networking Configuration
@@ -55,8 +55,7 @@ secret_names = []
 # Additional Tags
 additional_tags = {
   purpose     = "AlgoTest-Test"
-  owner       = "vaibhav.kapase"
-  created-by = "terraform"
+  created-by  = "terraform"
 }
 
 # Domain Configuration

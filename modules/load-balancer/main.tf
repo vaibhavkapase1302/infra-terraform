@@ -75,8 +75,10 @@ resource "aws_lb_target_group" "internal_api" {
   })
 }
 
-# ALB Listener for HTTPS (443)
+# ALB Listener for HTTPS (443) - Only create if certificate is provided
 resource "aws_lb_listener" "alb_https" {
+  count = var.ssl_certificate_arn != "" ? 1 : 0
+
   load_balancer_arn = aws_lb.alb.arn
   port              = "443"
   protocol          = "HTTPS"
@@ -89,18 +91,31 @@ resource "aws_lb_listener" "alb_https" {
   }
 }
 
-# ALB Listener for HTTP (80) - Redirect to HTTPS
+# ALB Listener for HTTP (80) - Redirect to HTTPS if certificate available, otherwise forward
 resource "aws_lb_listener" "alb_http" {
   load_balancer_arn = aws_lb.alb.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
-    type = "redirect"
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
+    type = var.ssl_certificate_arn != "" ? "redirect" : "forward"
+    
+    dynamic "redirect" {
+      for_each = var.ssl_certificate_arn != "" ? [1] : []
+      content {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
+    }
+    
+    dynamic "forward" {
+      for_each = var.ssl_certificate_arn == "" ? [1] : []
+      content {
+        target_group {
+          arn = aws_lb_target_group.traefik.arn
+        }
+      }
     }
   }
 }
