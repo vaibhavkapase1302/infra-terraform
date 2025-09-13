@@ -152,15 +152,7 @@ resource "helm_release" "aws_load_balancer_controller" {
       defaultSSLPolicy = "ELBSecurityPolicy-TLS-1-2-2017-01"
       
       ingressClassParams = {
-        create = true
-        name   = "default"
-        spec = {
-          namespaceSelector = {}
-          group = {
-            name = "elbv2.k8s.aws"
-          }
-          scheme = "internet-facing"
-        }
+        create = false
       }
 
       # Webhook configurations
@@ -168,6 +160,11 @@ resource "helm_release" "aws_load_balancer_controller" {
         caCert = ""
         cert   = ""
         key    = ""
+      }
+      
+      # Disable webhook if causing issues
+      webhook = {
+        create = false
       }
 
       # Metrics
@@ -177,6 +174,11 @@ resource "helm_release" "aws_load_balancer_controller" {
       # Health probes
       enableLeaderElection = true
       leaderElectionID     = "aws-load-balancer-controller-leader"
+      
+      # Health check configuration - use defaults
+      healthCheck = {
+        enabled = true
+      }
     })
   ]
 
