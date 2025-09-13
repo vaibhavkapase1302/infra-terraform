@@ -98,27 +98,8 @@ resource "helm_release" "aws_load_balancer_controller" {
 
       tolerations = []
 
-      affinity = {
-        podAntiAffinity = {
-          preferredDuringSchedulingIgnoredDuringExecution = [
-            {
-              weight = 100
-              podAffinityTerm = {
-                labelSelector = {
-                  matchExpressions = [
-                    {
-                      key      = "app.kubernetes.io/name"
-                      operator = "In"
-                      values   = ["aws-load-balancer-controller"]
-                    }
-                  ]
-                }
-                topologyKey = "kubernetes.io/hostname"
-              }
-            }
-          ]
-        }
-      }
+      # Remove pod anti-affinity since we're running single replica
+      affinity = {}
 
       resources = {
         requests = {
@@ -154,22 +135,70 @@ resource "helm_release" "aws_load_balancer_controller" {
       # Additional configurations
       defaultSSLPolicy = "ELBSecurityPolicy-TLS-1-2-2017-01"
       
-      # Disable problematic webhook features
-      enableServiceMutatorWebhook = false
-      
-      # Webhook configurations - simplified
+      # Webhook configurations
       webhook = {
         create = true
         port = 9443
+        hostNetwork = false
+        hostPort = null
+      }
+      
+      # Health check configurations
+      healthCheck = {
+        enabled = true
+        port = 61779
+        path = "/healthz"
+      }
+      
+      # Readiness probe configuration
+      readinessProbe = {
+        enabled = true
+        port = 61779
+        path = "/healthz"
+        initialDelaySeconds = 10
+        periodSeconds = 10
+        timeoutSeconds = 10
+        failureThreshold = 2
+      }
+      
+      # Liveness probe configuration
+      livenessProbe = {
+        enabled = true
+        port = 61779
+        path = "/healthz"
+        initialDelaySeconds = 30
+        periodSeconds = 10
+        timeoutSeconds = 10
+        failureThreshold = 2
       }
 
       # Metrics
       enableMetrics = true
       metricsBindAddr = ":8080"
 
-      # Health probes - simplified
+      # Leader election configuration
       enableLeaderElection = true
       leaderElectionID     = "aws-load-balancer-controller-leader"
+      leaderElectionNamespace = var.namespace
+      leaderElectionLeaseDuration = "15s"
+      leaderElectionRenewDeadline = "10s"
+      leaderElectionRetryPeriod = "2s"
+      
+      # Additional stability configurations
+      syncPeriod = "30s"
+      ingressClass = "alb"
+      
+      # Disable problematic features that can cause conflicts
+      enableServiceMutatorWebhook = false
+      enablePodReadinessGateInject = true
+      
+      # Additional controller stability settings
+      controllerConfig = {
+        enableShield = var.enable_shield
+        enableWaf = var.enable_waf
+        enableWafv2 = var.enable_wafv2
+        enableCertManager = var.enable_cert_manager
+      }
     })
   ]
 

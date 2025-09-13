@@ -67,7 +67,11 @@ variable "image_tag" {
 variable "replica_count" {
   description = "Number of AWS Load Balancer Controller replicas"
   type        = number
-  default     = 2
+  default     = 1
+  validation {
+    condition     = var.replica_count == 1
+    error_message = "AWS Load Balancer Controller should run with exactly 1 replica to avoid leader election conflicts."
+  }
 }
 
 variable "enable_shield" {
