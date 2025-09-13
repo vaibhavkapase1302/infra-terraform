@@ -48,7 +48,6 @@ variable "helm" {
     name            = "aws-load-balancer-controller"
     chart           = "aws-load-balancer-controller"
     namespace       = "kube-system"
-    version         = "1.9.0"
     cleanup_on_fail = true
   }
 }

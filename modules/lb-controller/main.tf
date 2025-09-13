@@ -67,9 +67,12 @@ resource "helm_release" "aws_load_balancer_controller" {
   name             = lookup(var.helm, "name", "aws-load-balancer-controller")
   chart            = lookup(var.helm, "chart", "aws-load-balancer-controller")
   repository       = lookup(var.helm, "repository", "https://aws.github.io/eks-charts")
-  version          = lookup(var.helm, "version", var.chart_version)
+  version          = lookup(var.helm, "version", null)
   namespace        = lookup(var.helm, "namespace", var.namespace)
   cleanup_on_fail  = lookup(var.helm, "cleanup_on_fail", true)
+  timeout          = 600
+  wait             = true
+  wait_for_jobs    = true
 
   values = [
     yamlencode({
@@ -151,47 +154,22 @@ resource "helm_release" "aws_load_balancer_controller" {
       # Additional configurations
       defaultSSLPolicy = "ELBSecurityPolicy-TLS-1-2-2017-01"
       
-      ingressClassParams = {
-        create = false
-      }
-
-      # Webhook configurations - let Helm manage TLS
+      # Disable problematic webhook features
+      enableServiceMutatorWebhook = false
+      
+      # Webhook configurations - simplified
       webhook = {
         create = true
         port = 9443
-        hostNetwork = false
       }
 
       # Metrics
       enableMetrics = true
       metricsBindAddr = ":8080"
 
-      # Health probes
+      # Health probes - simplified
       enableLeaderElection = true
       leaderElectionID     = "aws-load-balancer-controller-leader"
-      
-      # Use default health check configuration
-      healthCheck = {
-        enabled = true
-      }
-      
-      # Disable readiness probe to avoid 404 errors
-      readinessProbe = {
-        enabled = false
-      }
-      
-      # Keep liveness probe but use different endpoint
-      livenessProbe = {
-        enabled = true
-        httpGet = {
-          path = "/healthz"
-          port = 61779
-        }
-        initialDelaySeconds = 30
-        periodSeconds = 10
-        timeoutSeconds = 5
-        failureThreshold = 3
-      }
     })
   ]
 

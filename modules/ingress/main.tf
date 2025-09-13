@@ -19,6 +19,9 @@ resource "helm_release" "traefik" {
   version          = lookup(var.helm, "version", "26.1.0")
   namespace        = lookup(var.helm, "namespace", kubernetes_namespace.traefik.metadata[0].name)
   cleanup_on_fail  = lookup(var.helm, "cleanup_on_fail", true)
+  timeout          = 600
+  wait             = true
+  wait_for_jobs    = true
 
   values = [
     yamlencode({
