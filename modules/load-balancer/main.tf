@@ -97,26 +97,31 @@ resource "aws_lb_listener" "alb_http" {
   port              = "80"
   protocol          = "HTTP"
 
+  # When SSL certificate is available, redirect to HTTPS
+  count = var.ssl_certificate_arn != "" ? 1 : 0
+
   default_action {
-    type = var.ssl_certificate_arn != "" ? "redirect" : "forward"
-    
-    dynamic "redirect" {
-      for_each = var.ssl_certificate_arn != "" ? [1] : []
-      content {
-        port        = "443"
-        protocol    = "HTTPS"
-        status_code = "HTTP_301"
-      }
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
     }
-    
-    dynamic "forward" {
-      for_each = var.ssl_certificate_arn == "" ? [1] : []
-      content {
-        target_group {
-          arn = aws_lb_target_group.traefik.arn
-        }
-      }
-    }
+  }
+}
+
+# ALB Listener for HTTP (80) - Forward directly when no SSL certificate
+resource "aws_lb_listener" "alb_http_forward" {
+  load_balancer_arn = aws_lb.alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  # When no SSL certificate, forward directly
+  count = var.ssl_certificate_arn == "" ? 1 : 0
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.traefik.arn
   }
 }
 

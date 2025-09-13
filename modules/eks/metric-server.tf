@@ -1,10 +1,14 @@
 # Metrics Server deployment via Helm
 resource "helm_release" "metrics_server" {
-  name       = "metrics-server"
-  repository = "https://kubernetes-sigs.github.io/metrics-server/"
-  chart      = "metrics-server"
-  version    = "3.11.0"
-  namespace  = "kube-system"
+  count = var.metrics_server ? 1 : 0
+
+  name             = lookup(var.metrics_server_helm, "name", "metrics-server")
+  repository       = lookup(var.metrics_server_helm, "repository", "https://kubernetes-sigs.github.io/metrics-server/")
+  chart            = lookup(var.metrics_server_helm, "chart", "metrics-server")
+  version          = lookup(var.metrics_server_helm, "version", "3.11.0")
+  namespace        = lookup(var.metrics_server_helm, "namespace", "kube-system")
+  timeout          = lookup(var.metrics_server_helm, "timeout", 300)
+  cleanup_on_fail  = lookup(var.metrics_server_helm, "cleanup_on_fail", true)
 
   values = [
     yamlencode({

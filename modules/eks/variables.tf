@@ -131,3 +131,24 @@ variable "addons" {
   }))
   default = []
 }
+
+# Metrics Server configuration
+variable "metrics_server" {
+  description = "Enable/disable metrics-server helm release"
+  type        = bool
+  default     = true
+}
+
+variable "metrics_server_helm" {
+  description = "Helm release configuration for metrics-server"
+  type        = map(any)
+  default = {
+    repository      = "https://kubernetes-sigs.github.io/metrics-server/"
+    name            = "metrics-server"
+    chart           = "metrics-server"
+    namespace       = "kube-system"
+    version         = "3.11.0"
+    timeout         = 300
+    cleanup_on_fail = true
+  }
+}
