@@ -164,9 +164,3 @@ variable "enable_traefik_manifests" {
   type        = bool
   default     = false
 }
-
-variable "enable_sample_services" {
-  description = "Enable creation of sample microservices for testing"
-  type        = bool
-  default     = false
-}

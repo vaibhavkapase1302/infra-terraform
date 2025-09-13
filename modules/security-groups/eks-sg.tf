@@ -38,14 +38,6 @@ resource "aws_security_group" "eks_nodes" {
     self        = true
   }
 
-  ingress {
-    description = "Allow pods running extension API servers on port 443"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    self        = true
-  }
-
   egress {
     from_port   = 0
     to_port     = 0

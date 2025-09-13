@@ -65,8 +65,5 @@ domain_name = "kubetux.com"
 # Enable Traefik Kubernetes manifests for routing (disable for initial deployment)
 enable_traefik_manifests = false
 
-# Enable sample microservices for testing (disable for initial deployment)
-enable_sample_services = false
-
 # Enable External Secrets stores (after cluster is ready)
 enable_external_secrets_stores = false

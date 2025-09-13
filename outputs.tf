@@ -199,22 +199,6 @@ output "certificate_validation_records" {
   value       = module.acm.certificate_validation_records
 }
 
-# Sample Services Outputs
-output "sample_services_namespace" {
-  description = "Kubernetes namespace for sample services"
-  value       = module.sample_services.namespace
-}
-
-output "web_app_service_name" {
-  description = "Name of the web app service"
-  value       = module.sample_services.web_app_service_name
-}
-
-output "api_service_name" {
-  description = "Name of the API service"
-  value       = module.sample_services.api_service_name
-}
-
 output "useful_commands" {
   description = "Useful commands for managing the infrastructure"
   value = {
@@ -223,7 +207,6 @@ output "useful_commands" {
     get_pods_all_namespaces = "kubectl get pods --all-namespaces"
     get_traefik_controller  = "kubectl get pods -n ${module.traefik.namespace}"
     get_external_secrets    = "kubectl get pods -n ${module.external_secrets.namespace}"
-    get_sample_services     = module.sample_services.namespace != null ? "kubectl get pods -n ${module.sample_services.namespace}" : "N/A - Sample services not enabled"
     ecr_login              = length(var.ecr_repositories) > 0 ? "aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${split("/", module.ecr[0].repository_urls[0])[0]}" : "N/A - No ECR repositories configured"
     certificate_validation  = "Add the DNS validation records from 'certificate_validation_records' output to your domain's DNS to validate the SSL certificate"
     manual_dns_setup       = "Create DNS records in Route 53: www.kubetux.com, api.kubetux.com, traefik.kubetux.com pointing to ALB DNS name"

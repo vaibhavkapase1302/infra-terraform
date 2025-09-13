@@ -179,19 +179,6 @@ module "acm" {
 #   ]
 # }
 
-# Sample Services Module
-module "sample_services" {
-  source = "./modules/sample-services"
-
-  project_name = var.project_name
-  environment  = var.environment
-  enabled      = var.enable_sample_services
-
-  depends_on = [
-    module.eks
-  ]
-}
-
 # AWS Secrets Manager secrets
 # values for secret_names are like [service/backend1, service/backend2]
 locals {
