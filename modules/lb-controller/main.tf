@@ -156,8 +156,10 @@ resource "helm_release" "aws_load_balancer_controller" {
         name   = "default"
         spec = {
           namespaceSelector = {}
-          group             = "elbv2.k8s.aws"
-          scheme            = "internet-facing"
+          group = {
+            name = "elbv2.k8s.aws"
+          }
+          scheme = "internet-facing"
         }
       }
 

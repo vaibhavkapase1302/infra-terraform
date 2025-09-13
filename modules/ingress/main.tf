@@ -60,7 +60,7 @@ resource "helm_release" "traefik" {
 
       # Deployment configuration
       deployment = {
-        replicas = 2
+        replicas = 1
         resources = {
           requests = {
             cpu    = "100m"
