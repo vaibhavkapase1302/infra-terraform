@@ -107,7 +107,8 @@ module "traefik" {
 
   depends_on = [
     module.eks,
-    module.load_balancer
+    module.load_balancer,
+    module.lb_controller
   ]
 }
 

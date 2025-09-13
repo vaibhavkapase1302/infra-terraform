@@ -155,16 +155,11 @@ resource "helm_release" "aws_load_balancer_controller" {
         create = false
       }
 
-      # Webhook configurations
-      webhookTLS = {
-        caCert = ""
-        cert   = ""
-        key    = ""
-      }
-      
-      # Disable webhook if causing issues
+      # Webhook configurations - let Helm manage TLS
       webhook = {
-        create = false
+        create = true
+        port = 9443
+        hostNetwork = false
       }
 
       # Metrics
@@ -187,6 +182,7 @@ resource "helm_release" "aws_load_balancer_controller" {
     aws_iam_role_policy_attachment.aws_load_balancer_controller,
   ]
 }
+
 
 # Data source to get current AWS region
 data "aws_region" "current" {}
