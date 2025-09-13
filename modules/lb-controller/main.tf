@@ -170,9 +170,27 @@ resource "helm_release" "aws_load_balancer_controller" {
       enableLeaderElection = true
       leaderElectionID     = "aws-load-balancer-controller-leader"
       
-      # Health check configuration - use defaults
+      # Use default health check configuration
       healthCheck = {
         enabled = true
+      }
+      
+      # Disable readiness probe to avoid 404 errors
+      readinessProbe = {
+        enabled = false
+      }
+      
+      # Keep liveness probe but use different endpoint
+      livenessProbe = {
+        enabled = true
+        httpGet = {
+          path = "/healthz"
+          port = 61779
+        }
+        initialDelaySeconds = 30
+        periodSeconds = 10
+        timeoutSeconds = 5
+        failureThreshold = 3
       }
     })
   ]
