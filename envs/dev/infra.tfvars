@@ -22,19 +22,19 @@ eks_node_group_min_size           = 1
 eks_addons = [
   {
     name    = "coredns"
-    version = "v1.10.1-eksbuild.5"
+    version = "v1.11.4-eksbuild.10"
   },
   {
     name    = "kube-proxy"
-    version = "v1.28.2-eksbuild.2"
+    version = "v1.32.3-eksbuild.7"
   },
   {
     name    = "vpc-cni"
-    version = "v1.15.4-eksbuild.1"
+    version = "v1.19.5-eksbuild.3"
   },
   {
     name    = "aws-ebs-csi-driver"
-    version = "v1.25.0-eksbuild.1"
+    version = "v1.47.1-eksbuild.1"
   }
 ]
 
